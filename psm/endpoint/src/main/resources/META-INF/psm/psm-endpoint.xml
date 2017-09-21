@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sofa="http://schema.alipay.com/sofa/schema/slite"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://schema.alipay.com/sofa/schema/slite http://schema.alipay.com/sofa/slite.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"
+       default-autowire="byName">
+
+    <!-- 增加一个 rest filter 主要保证,spring mvc 的8080 端口也能访问到8341 端口 -->
+    <bean class="com.xinmei.psm.endpoint.filter.CommonContainerResponseFilter">
+        <property name="allowedOrigins">
+            <set>
+                <!-- 发布线上时:要把域名配置为线上发布的域名,保证只有配置的域名才允许访问这台机器 -->
+                <value>http://localhost:8080</value>
+                <value>http://localhost:8341</value>
+                <!-- 这里大家需要注意:这个在使用chrome浏览器的插件postman插件测试后端数据时,需要加上这条保证能够postman正确提交数据-->
+                <value>chrome-extension://fhbjgbiflinjbdggehcddcbncdddomop</value>
+                <value>chrome-extension://fdmmgilgnpjigdojojpjoooidkmcomcm</value>
+            </set>
+        </property>
+    </bean>
+</beans>
