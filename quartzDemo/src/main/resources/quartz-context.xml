@@ -1,79 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-    <context:component-scan base-package="com.defonds.scheduler" />
+    <context:component-scan base-package="com.defonds.scheduler"/>
 
 
     <!-- 当你需要在特定对象上调用方法时 -->
     <bean id="simpleJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-        <property name="targetObject" ref="myBean" />
-        <property name="targetMethod" value="printMessage" />
-        <property name="concurrent" value="false" />
+        <property name="targetObject" ref="simpleScheduledJob"/>
+        <property name="targetMethod" value="printMessage"/>
+    </bean>
+    <!-- 测试并发用 -->
+    <bean id="testJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="myBean"/>
+        <property name="targetMethod" value="test"/>
+        <property name="concurrent" value="false"/>
     </bean>
 
 
     <!-- 当您需要更复杂的处理时，将数据传递给调度的作业 -->
-    <bean name="firstComplexJobDetail"    class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="jobClass" value="com.defonds.scheduler.jobs.FirstScheduledJob" />
-
+    <bean name="ComplexJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.defonds.scheduler.jobs.FirstScheduledJob"/>
         <property name="jobDataMap">
             <map>
-                <entry key="anotherBean" value-ref="anotherBean" />
-                <entry key="lingfly" value="凌桃根"/>
+                <entry key="anotherBean" value-ref="anotherBean"/>
+                <entry key="stringDemo" value="我是dataMap里面的字段^O^"/>
             </map>
         </property>
-        <property name="durability" value="true" />
+        <property name="durability" value="true"/>
     </bean>
 
-    <!-- Always run at 20:00 everyday -->
-    <bean name="secondComplexJobDetail"    class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-        <property name="jobClass" value="com.defonds.scheduler.jobs.SecondScheduledJob" />
-        <property name="durability" value="true" />
-    </bean>
-
-
-    <!-- 每2秒运行一次，初始延迟1秒 执行10次-->
-    <bean id="simpleTrigger"  class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
-        <property name="jobDetail" ref="simpleJobDetail" />
-        <property name="startDelay" value="1000" />
-        <property name="repeatInterval" value="4000" />
-        <property name="repeatCount" value="10"/>
-
+    <!-- 每4秒运行一次，初始延迟1秒 执行5次-->
+    <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="simpleJobDetail"/>
+        <property name="startDelay" value="1000"/>
+        <property name="repeatInterval" value="4000"/>
+        <property name="repeatCount" value="5"/>
     </bean>
 
 
     <!-- 每5秒就运行一次-->
-    <bean id="cronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="firstComplexJobDetail" />
-        <property name="cronExpression" value="0/5 * * ? * *" />
-
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="ComplexJobDetail"/>
+        <property name="cronExpression" value="0/5 * * ? * *"/>
     </bean>
 
-    <!-- 每天都要在20:00运行 -->
-    <bean id="secondCronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-        <property name="jobDetail" ref="secondComplexJobDetail" />
 
-        <property name="cronExpression" value="0 0 20 ? * *" />
+    <!-- 测试并发用-->
+    <bean id="testCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="testJobDetail"/>
+        <!--<property name="cronExpression" value="0/2 * * ? * *"/>-->
+        <property name="cronExpression" value="1,3,5,7,9,11 * * ? * *"/>
+       <!-- <property name="misfireInstruction" value="2"></property>-->
     </bean>
 
-    <bean  class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!-- quartz配置 -->
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.threadPool.threadCount">10</prop>
+                <prop key="org.quartz.jobStore.misfireThreshold">10000</prop>
+            </props>
+        </property>
         <property name="jobDetails">
             <list>
-                <ref bean="simpleJobDetail" />
-                <ref bean="firstComplexJobDetail" />
-                <ref bean="secondComplexJobDetail" />
+               <!-- <ref bean="simpleJobDetail"/>
+                <ref bean="ComplexJobDetail"/>-->
+               <ref bean="testJobDetail"/>
             </list>
         </property>
 
         <property name="triggers">
             <list>
-                <ref bean="simpleTrigger" />
-                <ref bean="cronTrigger" />
-                <ref bean="secondCronTrigger" />
+                <!--<ref bean="simpleTrigger" />
+                <ref bean="cronTrigger"/>-->
+                <ref bean="testCronTrigger"/>
             </list>
         </property>
     </bean>

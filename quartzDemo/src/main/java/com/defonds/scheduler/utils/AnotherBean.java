@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class AnotherBean {
     private int an ;
     public void printAnotherMessage(){
-        System.out.println("I am AnotherBean. I am called by Quartz jobBean using CronTriggerFactoryBean");
+        System.out.println("我是dataMap里面的类^o^");
     }
 
     public int getAn() {

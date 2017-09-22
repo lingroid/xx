@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://D://quartzDemo/quartzDemo.iml" filepath="D://quartzDemo/quartzDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quartzDemo.iml" filepath="$PROJECT_DIR$/quartzDemo.iml" />
     </modules>
   </component>
 </project>

@@ -1,24 +1,19 @@
 package com.defonds.scheduler.jobs;
 
-import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Random;
 
 /**
- * Created by xinmei on 2017/9/21.
+ * Created by xinmei on 2017/9/22.
  */
 @Component
 public class MyBean {
     int i;
 
-
-    public void printMessage() throws InterruptedException {
-        System.out.println(i++);
+    public void test() throws InterruptedException {
+        System.out.println("----------------我是测试并发调度用的"+i++ +"-------------------");
         System.out.println(new Date());
-        System.out.println("I am MyBean. I am called by MethodInvokingJobDetailFactoryBean using SimpleTriggerFactoryBean");
-        Thread.sleep(5000);
+        Thread.sleep(4000);
     }
-
 }
